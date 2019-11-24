@@ -38,6 +38,69 @@
     </div>
   </div>
 
+  <!-- 使用bootstrap的模态框 -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">温馨提示!</h4>
+        </div>
+        <div class="modal-body">
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning" data-dismiss="modal">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script src="./libs/http.js"></script>
+  <script>
+    $(function(){
+      //1.给登录按钮设置一个点击事件
+      $('.input_sub').on('click',function(e){
+        e.preventDefault();
+        //2.获取用户名和密码
+        var username = $('.input_txt').val().trim();
+        var password = $('.input_pass').val().trim();
+        //3.判定非空
+        if(username==""||password==""){
+          // alert('账号和密码不能为空!');
+          $('#myModal .modal-body').text('账号和密码不能为空');
+          $("#myModal").modal();
+          return;
+        }
+        //4.发送ajax请求,完成登录
+        $.ajax({
+          url: BigNew.user_login,
+          type:'post',
+          data:{
+            username:username,
+            password:password
+          },
+          success:function(backData){
+            // console.log(backData);
+            $('#myModal .modal-body').text(backData.msg);
+            $("#myModal").modal();
+            if(backData.code == 200){
+              //账号密码正确,会返回一个token,把它保存在本地
+              window.localStorage.setItem('token',backData.token);
+
+              //此事件在模态框被隐藏(并且同时在css过渡效果完成)之后触发
+              $('#myModal').on('hidden.bs.modal',function(e){
+                window.location.href = './index.html'
+              })
+            }
+          }
+        });
+      });
+    })
+  </script>
 </body>
 
 </html>
